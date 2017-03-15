@@ -4,6 +4,8 @@
  */
 import Watcher from './watcher';
 import { computedExpression } from '../utils';
+import { parseTextExp, parseClassExp, parseStyleExp} from './parser';
+import { nodeToFragment, checkDirective, updater } from './helpers';
 var $$id = 0;
 
 export default class Compiler {
