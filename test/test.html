@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>测试MVVM框架</title>
+    <script src="../dist/ivm.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <p>输入的值为：<span>{{textVal}}</span></p>
+      <input type="text" v-model="textVal">
+      <button v-on:click="addItem">增加</button>
+      <ul>
+        <li v-for="text in textArr">还没实现v-for的值</li>
+      </ul>
+    </div>
+    <script>
+      var vm = new Ivm({
+        el: '#app',
+        data: {
+          textVal: "hello world",
+          textArr: []
+        },
+        methods: {
+          addItem() {
+            if (this.textVal == "") {
+              alert('请输入文本！');
+              return;
+            } 
+            this.textArr.push(this.textVal);
+            console.log(this.textArr);
+            this.textVal = "";
+          }
+        }
+      })
+    </script>
+  </body>
+</html>

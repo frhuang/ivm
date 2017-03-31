@@ -1,3 +1,4 @@
+export const hasProto = '__proto__' in {}
 /**
  * 判断是否相等
  * @param {*} a 
@@ -40,10 +41,47 @@ export function deepCopy(from) {
  */
 export function computeExpression(exp, scope) {
   try {
-    with (scope) {
-      return eval(exp);
-    }
+    var e = exp.split('.');
+    var val = scope.$data;
+    e.forEach(function(k) {
+      val = val[k];
+    })
+    return val;
   } catch (e) {
     console.error('ERROR', e);
+  }
+}
+
+export function def(obj, key, val, enumerable) {
+  Object.defineProperty(obj, key, {
+    value: val,
+    enumerable: !!enumerable,
+    writable: true,
+    configurable: true
+  })
+}
+
+const hasOwnProperty = Object.prototype.hasOwnProperty
+export function hasOwn (obj, key) {
+  return hasOwnProperty.call(obj, key)
+}
+
+
+export function isPlainObject (obj) {
+  return Object.prototype.toString.call(obj) === '[object Object]'
+}
+
+export class Set {
+  constructor () {
+    this.set = Object.create(null)
+  }
+  has (key) {
+    return this.set[key] === true
+  }
+  add (key) {
+    this.set[key] = true
+  }
+  clear () {
+    this.set = Object.create(null)
   }
 }

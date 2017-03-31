@@ -1,4 +1,4 @@
-export function nodeToFragment(node) {
+export function nodeToFragement(node) {
   var fragement = document.createDocumentFragment(), child;
   while (child = node.firstChild) {
     if (isIgnorable(child)) {

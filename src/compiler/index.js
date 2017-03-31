@@ -2,10 +2,10 @@
  * compiler
  * @description: 实现对模板的编译，提取指令并将vm与视图关联起来
  */
-import Watcher from './watcher';
-import { computedExpression } from '../utils';
-import { parseTextExp, parseClassExp, parseStyleExp} from './parser';
-import { nodeToFragment, checkDirective, updater } from './helpers';
+import Watcher from '../observer/watcher';
+import { computeExpression } from '../utils/index';
+import { parseTextExp, parseClassExp, parseStyleExp} from './parser/index';
+import { nodeToFragement, checkDirective, updater } from './helpers';
 var $$id = 0;
 
 export default class Compiler {
@@ -61,7 +61,7 @@ export default class Compiler {
           lazyCompileExp = exp;
         } else {
           var handler = self[dir.type + 'Handler'].bind(self);
-          if (hanlder) {
+          if (handler) {
             handler(node, scope, exp, dir.prop);
           } else {
             console.error('找不到' + dir.type + '指令');
@@ -76,6 +76,13 @@ export default class Compiler {
     } else {
       this.compile(node, scope);
     }
+  }
+
+  bindWatcher (node, scope, exp, dir, prop) {
+    var updateFn = updater[dir];
+    var watcher = new Watcher(exp, scope, function (newVal) {
+      updateFn && updateFn(node, newVal, prop);
+    })
   }
 
   onHandler (node, scope, exp, eventType) {
@@ -94,6 +101,7 @@ export default class Compiler {
 
   modelHandler (node, scope, exp, prop) {
     if (node.tagName.toLowerCase() === 'input') {
+      var self = this;
       switch (node.type) {
         case 'checkbox':
           this.bindWatcher(node, scope, exp, 'checkbox');
@@ -111,21 +119,15 @@ export default class Compiler {
         case 'radio':
           ths.bindWatcher(node, scope, exp, 'radio');
           node.addEventListener('change', (e) => {
-            var newValue = e.target.value;
-            var calExp = exp + '=`' + newValue + '`';
-            with (scope) {
-              eval(calExp);
-            }
+            var newVal = e.target.value;
+            scope[exp] = newVal;
           });
           break;
         case 'file':
           this.bindWatcher(node, scope, exp, 'value');
           node.addEventListener('change', (e) => {
             var newVal = e.target.value;
-            var calExp = exp + '=`' + newVal + '`';
-            with (scope) {
-              eval(calExp);
-            }
+            scope[exp] = newVal;
           });
           break;
         default: 
@@ -133,10 +135,7 @@ export default class Compiler {
           node.addEventListener('input', (e) => {
             node.isInputting = true;
             var newVal = e.target.value;
-            var calExp = exp + '=`' + newVal + '`';
-            with (scope) {
-              eval(calExp);
-            }
+            scope[exp] = newVal;
           });
           break;
       }
