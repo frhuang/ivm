@@ -1,16 +1,11 @@
-var uid = 0;
-
+let uid = 0;
 export default class Dep {
   constructor () {
     this.id = uid++;
     this.subs = [];
-    // this.subs = {}
   }
 
   addSub (sub) {
-    // if (!this.subs[target.uid]) {  //防止重复添加
-		//   this.subs[target.uid] = target;
-	  // }
     this.subs.push(sub);
   }
 
@@ -29,9 +24,6 @@ export default class Dep {
   }
 
   notify (options) {
-    // for (var uid in this.subs) {
-    //   this.subs[uid].update(options);
-    // }
     const subs = this.subs.slice()
     for (let i = 0, l = subs.length; i < l; i++) {
       subs[i].update()
@@ -40,3 +32,13 @@ export default class Dep {
 }
 
 Dep.target = null;
+const depTarget = []
+
+export function pushTarget (target) {
+  if (Dep.target) depTarget.push(Dep.target)
+  Dep.target = target
+}
+
+export function popTarget () {
+  Dep.target = depTarget.pop()
+}
