@@ -7,11 +7,11 @@
   </head>
   <body>
     <div id="app">
-      <p>输入的值为：<span>{{textVal}}</span></p>
+      <p>输入的蚊子是：{{textVal}}</p>
       <input type="text" v-model="textVal">
       <button v-on:click="addItem">增加</button>
       <ul>
-        <li v-for="text in textArr">{{key}}</li>
+        <li v-for="item in textArr">{{item}}</li>
       </ul>
     </div>
     <script>
@@ -19,7 +19,7 @@
         el: '#app',
         data: {
           textVal: "hello world",
-          textArr: []
+          textArr: ["1223213", "fsfsdjk"]
         },
         methods: {
           addItem() {

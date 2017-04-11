@@ -1,5 +1,5 @@
 export function parseTextExp(text) {
-  var regText = /\{\{(.+?)\}\}/g;
+  var regText =/\{\{((?:.|\n)+?)\}\}/g
   var pieces = text.split(regText);
   var matches = text.match(regText);
 

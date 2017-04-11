@@ -52,15 +52,11 @@ var Dep = function () {
 
     this.id = uid++;
     this.subs = [];
-    // this.subs = {}
   }
 
   createClass(Dep, [{
     key: "addSub",
     value: function addSub(sub) {
-      // if (!this.subs[target.uid]) {  //防止重复添加
-      //   this.subs[target.uid] = target;
-      // }
       this.subs.push(sub);
     }
   }, {
@@ -82,9 +78,6 @@ var Dep = function () {
   }, {
     key: "notify",
     value: function notify(options) {
-      // for (var uid in this.subs) {
-      //   this.subs[uid].update(options);
-      // }
       var subs = this.subs.slice();
       for (var i = 0, l = subs.length; i < l; i++) {
         subs[i].update();
@@ -135,12 +128,13 @@ function deepCopy(from) {
  */
 function computeExpression(exp, scope) {
   try {
-    var e = exp.split('.');
+    var e = exp.split('+');
     var val = scope.$data;
+    var value = "";
     e.forEach(function (k) {
-      val = val[k];
+      value = val[k];
     });
-    return val;
+    return value;
   } catch (e) {
     console.error('ERROR', e);
   }
@@ -399,7 +393,7 @@ var Watcher = function () {
 }();
 
 function parseTextExp(text) {
-  var regText = /\{\{(.+?)\}\}/g;
+  var regText = /\{\{((?:.|\n)+?)\}\}/g;
   var pieces = text.split(regText);
   var matches = text.match(regText);
 
@@ -578,7 +572,7 @@ var Compiler = function () {
 
       var exp = parseTextExp(text);
       scope = scope || this.vm;
-      this.textHandler(node, scope, exp);
+      this.bindWatcher(node, scope, exp, 'text');
     }
   }, {
     key: 'compileElementNode',
@@ -692,11 +686,6 @@ var Compiler = function () {
       });
     }
   }, {
-    key: 'textHandler',
-    value: function textHandler(node, scope, exp, prop) {
-      this.bindWatcher(node, scope, exp, 'text');
-    }
-  }, {
     key: 'showHandler',
     value: function showHandler(node, scope, exp, prop) {
       this.bindWatcher(node, scope, exp, 'style', 'display');
@@ -745,8 +734,8 @@ var Compiler = function () {
           var cloneNode = node.cloneNode(true);
           parentNode.insertBefore(cloneNode, endNode);
           var forScope = Object.create(scope);
-          forScope.$index = index;
-          forScope[itemName] = item;
+          forScope.$data.$index = index;
+          forScope.$data[itemName] = item;
           self.compile(cloneNode, forScope);
         });
       });

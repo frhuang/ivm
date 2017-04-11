@@ -41,12 +41,13 @@ export function deepCopy(from) {
  */
 export function computeExpression(exp, scope) {
   try {
-    var e = exp.split('.');
+    var e = exp.split('+');
     var val = scope.$data;
+    var value = "";
     e.forEach(function(k) {
-      val = val[k];
+      value = val[k];
     })
-    return val;
+    return value;
   } catch (e) {
     console.error('ERROR', e);
   }

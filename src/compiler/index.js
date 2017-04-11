@@ -42,7 +42,7 @@ export default class Compiler {
 
     var exp = parseTextExp(text);
     scope = scope || this.vm;
-    this.textHandler(node, scope, exp)
+    this.bindWatcher(node, scope, exp, 'text');
   }
 
   compileElementNode (node, scope) {
@@ -151,10 +151,6 @@ export default class Compiler {
     });
   }
 
-  textHandler (node, scope, exp, prop) {
-    this.bindWatcher(node, scope, exp, 'text');
-  }
-
   showHandler (node, scope, exp, prop) {
     this.bindWatcher(node, scope, exp, 'style', 'display');
   }
@@ -199,8 +195,8 @@ export default class Compiler {
         var cloneNode = node.cloneNode(true);
         parentNode.insertBefore(cloneNode, endNode);
         var forScope = Object.create(scope);
-        forScope.$index = index;
-        forScope[itemName] = item;
+        forScope.$data.$index = index;
+        forScope.$data[itemName] = item;
         self.compile(cloneNode, forScope);
       });
     });
